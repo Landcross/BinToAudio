@@ -30,52 +30,32 @@ def parse_filepath(input_path: pathlib.Path, output_path: pathlib.Path, pregap_h
     cuesheet = parse_cuesheet(input_path)
 
     if separate_indexes:
-        if pregap_handling == 'skip':
-            for file in cuesheet.files:
-                print('    Converting file ' + file.name)
-                with open(os.path.join(input_path.parents[0], file.name), 'rb') as bin_file:
-                    for track_i, track in enumerate([t for t in file.tracks if t.type == 'AUDIO']):
-                        next_track = file.tracks[track_i + 1] if track_i + 1 < len(file.tracks) else None
+        for file in cuesheet.files:
+            print('    Converting file ' + file.name)
+            with open(os.path.join(input_path.parents[0], file.name), 'rb') as bin_file:
+                for track_i, track in enumerate([t for t in file.tracks if t.type == 'AUDIO']):
+                    next_track = file.tracks[track_i + 1] if track_i + 1 < len(file.tracks) else None
+
+                    if pregap_handling == 'skip':
                         indexes = [i for i in track.indexes if i.number > 0]
+                    else:
+                        indexes = track.indexes
 
-                        for index_i, index in enumerate(indexes):
-                            next_index = indexes[index_i + 1] if index_i + 1 < len(indexes) else None
-                            offset = length_to_bytes(index.length)
+                    for index_i, index in enumerate(indexes):
+                        next_index = indexes[index_i + 1] if index_i + 1 < len(indexes) else None
+                        offset = length_to_bytes(index.length)
 
-                            if next_index:
-                                size = length_to_bytes(next_index.length) - offset
-                            elif next_track:
-                                size = length_to_bytes(next_track.indexes[0].length) - offset
-                            else:
-                                bin_file.seek(0, 2)
-                                size = bin_file.tell() - offset
+                        if next_index:
+                            size = length_to_bytes(next_index.length) - offset
+                        elif next_track:
+                            size = length_to_bytes(next_track.indexes[0].length) - offset
+                        else:
+                            bin_file.seek(0, 2)
+                            size = bin_file.tell() - offset
 
-                            bin_file.seek(offset)
-                            filename = file.name.rsplit('.', 1)[0] + f' (Index {str(index.number).zfill(2)})'
-                            export(bin_file.read(size), get_track_tags(cuesheet, track.number), os.path.join(output_path, input_path.stem), filename, output_format)
-
-        else:
-            for file in cuesheet.files:
-                print('    Converting file ' + file.name)
-                with open(os.path.join(input_path.parents[0], file.name), 'rb') as bin_file:
-                    for track_i, track in enumerate([t for t in file.tracks if t.type == 'AUDIO']):
-                        next_track = file.tracks[track_i + 1] if track_i + 1 < len(file.tracks) else None
-
-                        for index_i, index in enumerate(track.indexes):
-                            next_index = track.indexes[index_i + 1] if index_i + 1 < len(track.indexes) else None
-                            offset = length_to_bytes(index.length)
-
-                            if next_index:
-                                size = length_to_bytes(next_index.length) - offset
-                            elif next_track:
-                                size = length_to_bytes(next_track.indexes[0].length) - offset
-                            else:
-                                bin_file.seek(0, 2)
-                                size = bin_file.tell() - offset
-
-                            bin_file.seek(offset)
-                            filename = file.name.rsplit('.', 1)[0] + f' (Index {str(index.number).zfill(2)})'
-                            export(bin_file.read(size), get_track_tags(cuesheet, track.number), os.path.join(output_path, input_path.stem), filename, output_format)
+                        bin_file.seek(offset)
+                        filename = file.name.rsplit('.', 1)[0] + f' (Index {str(index.number).zfill(2)})'
+                        export(bin_file.read(size), get_track_tags(cuesheet, track.number), os.path.join(output_path, input_path.stem), filename, output_format)
 
     else:  # No separate indexes
         if pregap_handling == 'skip':
