@@ -18,10 +18,17 @@ The path where the exported files will be saved. The script creates a subfolder 
 
 ### Optional
 `-si | --separate-indexes`
+
 Default: False. By setting this flag, the script will export all indexes within a track separately.
 
+`-ht | --hidden-track`
+
+Default: False. By setting this flag, the script will (try to) detect and extract any hidden track in the pregap of Track 1.
+
 `-p | --pregap [skip start end]`
+
 Default: end. This flag changes how the script handles pregap. Skip skips pregaps completely. Start adds pregaps (where applicable) to the start of the track. End adds pregaps to the end of the previous track (this is the 'standard' EAC/AccurateRip way of handling pregaps).
 
 `-f | --format [wav flac mp3]`
+
 Default: flac. This flag changes the audio format that is being exported.
