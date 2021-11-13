@@ -180,9 +180,9 @@ def main():
     path: pathlib.Path = args.input
 
     if path.is_file():
-        parse_filepath(path, args.output, args.pregap, args.separate_indexes, args.hiden_track, args.format)
+        parse_filepath(path, args.output, args.pregap, args.separate_indexes, args.hidden_track, args.format)
     elif path.is_dir():
-        parse_dirpath(path, args.output, args.pregap, args.separate_indexes, args.hiden_track, args.format)
+        parse_dirpath(path, args.output, args.pregap, args.separate_indexes, args.hidden_track, args.format)
     else:
         pass
 
