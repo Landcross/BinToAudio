@@ -66,7 +66,7 @@ def parse_cuesheet(file: Union[pathlib.Path, IO]) -> CueSheet:
             clean_data = data.replace('"', '')
             if current_track:
                 current_track.title = clean_data
-            elif
+            else:
                 cuesheet.title = clean_data
 
         elif command == 'PERFORMER':
